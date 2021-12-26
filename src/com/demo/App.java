@@ -1,5 +1,7 @@
 package com.demo;
 
+import java.sql.SQLException;
+
 public class App
 {
     public static void main( String[] args )
@@ -36,8 +38,12 @@ public class App
 //                                }
 //                        }
 //                }
-    	GetConnection connection = new GetConnection();
-    	connection.getConnection();
-    	connection.closeConnection();
+    	EmpPayrollService service = new EmpPayrollService();
+    	try {
+			service.showAll();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }
