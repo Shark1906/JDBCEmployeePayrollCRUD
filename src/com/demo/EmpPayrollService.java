@@ -8,16 +8,20 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 public class EmpPayrollService {
-	
+
 	GetConnection connection = new GetConnection();
-	
+	Connection conn = null;
+	Statement stmt = null;
+	PreparedStatement preparedStatement = null;
+
 	public void showAll() throws SQLException {
-		Connection conn = connection.getConnection();
+
+		conn = connection.getConnection();
 		String query = "SELECT * FROM employee_payroll";
-		Statement stmt = conn.createStatement();
+		stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(query);
-		
-		while(rs.next()) {
+
+		while (rs.next()) {
 			String id = rs.getString(1);
 			String name = rs.getString(2);
 			String gender = rs.getString(3);
@@ -31,19 +35,19 @@ public class EmpPayrollService {
 			String taxablepay = rs.getString(11);
 			String incometax = rs.getString(12);
 			String netpay = rs.getString(13);
-			System.out.println("ID : "+ id + ", Name : "+ name + ", Gender : "+ gender + ", Salary : "+salary+
-					", StartDate : " + startdate + ", Phone : "+phone+ ", Dept : " + dept);
+			System.out.println("ID : " + id + ", Name : " + name + ", Gender : " + gender + ", Salary : " + salary
+					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Dept : " + dept);
 		}
-		
+		stmt.close();
 		connection.closeConnection();
 	}
-	
+
 	public void updateBasePay() throws SQLException {
-		PreparedStatement preparedStatement = null;
+
 		Scanner sc = new Scanner(System.in);
-		Connection conn = connection.getConnection();
+		conn = connection.getConnection();
 		System.out.println("Enter the employee Name");
-		String name = sc.next();
+		String name = sc.nextLine();
 		System.out.println("Enter the new BasePay");
 		double basepay = sc.nextDouble();
 		String query = "update employee_payroll set basicpay=? where name=?";
@@ -51,14 +55,34 @@ public class EmpPayrollService {
 		preparedStatement.setDouble(1, basepay);
 		preparedStatement.setString(2, name);
 		int i = preparedStatement.executeUpdate();
-		if(i > 0) {
+		if (i > 0) {
 			System.out.println("Employee updated successsfully");
 		}
-		
+
 		preparedStatement.close();
-		sc.close();
-		connection.closeConnection();
-		
+		connection.closeConnection();	
 	}
 
+	public void showByDate() throws SQLException {
+		PreparedStatement preparedStatement = null;
+		Scanner sc1 = new Scanner(System.in);
+		conn = connection.getConnection();
+		System.out.println("Enter the Start Date(yyyy-mm-dd)");
+		String startdate = sc1.nextLine();
+		System.out.println("Enter the End Date(yyyy-mm-dd)");
+		String enddate = sc1.nextLine();
+		String query = "select * from employee_payroll where startdate between cast(? as date)"
+				+ " and cast(? as date)";
+		preparedStatement = conn.prepareStatement(query);
+		preparedStatement.setString(1, startdate);
+		preparedStatement.setString(2, enddate);
+
+		ResultSet rs = preparedStatement.executeQuery();
+		while (rs.next()) {
+			System.out.println(rs.getString(2));
+		}
+
+		preparedStatement.close();
+		connection.closeConnection();
+	}
 }
