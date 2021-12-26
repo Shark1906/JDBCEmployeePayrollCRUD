@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class GetConnection {
-	
+
 	Connection connection = null;
 
 	public Connection getConnection() {
@@ -22,12 +22,12 @@ public class GetConnection {
 			System.out.println("Connection Established");
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} 
+		}
 		return connection;
 	}
-	
+
 	public void closeConnection() {
-		
+
 		if (connection != null) {
 			try {
 				connection.close();
@@ -36,7 +36,7 @@ public class GetConnection {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 }
