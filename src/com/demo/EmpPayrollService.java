@@ -64,7 +64,6 @@ public class EmpPayrollService {
 	}
 
 	public void showByDate() throws SQLException {
-		PreparedStatement preparedStatement = null;
 		Scanner sc1 = new Scanner(System.in);
 		conn = connection.getConnection();
 		System.out.println("Enter the Start Date(yyyy-mm-dd)");
@@ -84,5 +83,72 @@ public class EmpPayrollService {
 
 		preparedStatement.close();
 		connection.closeConnection();
+	}
+	
+	public void analyseEmployeeSalary() throws SQLException {
+		Scanner sc2 = new Scanner(System.in);
+		conn = connection.getConnection();
+		String query;
+		ResultSet rs;
+		System.out.println("Select any option");
+		int option;
+		do {
+		System.out.println("1. Sum\n2. Avg\n3. Min\n4. Max\n5. Count\n6. Exit ");
+		option = sc2.nextInt();
+		switch (option) {
+		case 1:
+			query = "select gender,sum(salary) from employee_payroll group by gender";
+			preparedStatement = conn.prepareStatement(query);
+			rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				System.out.print(rs.getString("gender")+" ");
+				System.out.println(rs.getString("sum(salary)"));	
+			}
+			break;
+		
+		case 2:
+			query = "select gender,avg(salary) from employee_payroll group by gender";
+			preparedStatement = conn.prepareStatement(query);
+			rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				System.out.print(rs.getString("gender")+" ");
+				System.out.println(rs.getString("avg(salary)"));	
+			}
+			break;
+		
+		case 3:
+			query = "select gender,min(salary) from employee_payroll group by gender";
+			preparedStatement = conn.prepareStatement(query);
+			rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				System.out.print(rs.getString("gender")+" ");
+				System.out.println(rs.getString("min(salary)"));	
+			}
+			break;
+		
+		case 4:
+			query = "select gender,max(salary) from employee_payroll group by gender";
+			preparedStatement = conn.prepareStatement(query);
+			rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				System.out.print(rs.getString("gender")+" ");
+				System.out.println(rs.getString("max(salary)"));	
+			}
+			break;
+		
+		case 5:
+			query = "select gender,count(salary) from employee_payroll group by gender";
+			preparedStatement = conn.prepareStatement(query);
+			rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				System.out.print(rs.getString("gender")+" ");
+				System.out.println(rs.getString("count(salary)"));	
+			}
+			break;
+		case 6:
+			preparedStatement.close();
+			connection.closeConnection();
+			break;
+		}}while(option!=6);	
 	}
 }
