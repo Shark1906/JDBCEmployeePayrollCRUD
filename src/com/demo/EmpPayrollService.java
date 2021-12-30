@@ -29,38 +29,52 @@ public class EmpPayrollService {
 			String startdate = rs.getString(5);
 			String phone = rs.getString(6);
 			String address = rs.getString(7);
+			boolean is_active = rs.getBoolean(10);
 //			String dept = rs.getString(8);
 //			String basic = rs.getString(9);
 //			String deductions = rs.getString(10);
 //			String taxablepay = rs.getString(11);
 //			String incometax = rs.getString(12);
 //			String netpay = rs.getString(13);
-			System.out.println("ID : " + id + ", Name : " + name + ", Gender : " + gender + ", Salary : " + salary
-					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Add : "+address );//+ ", Dept : " + dept+", Basic Pay : "+basic);
+			System.out.println("Emp ID : " + id + ", Name : " + name + ", Gender : " + gender + ", Salary : " + salary
+					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Add : "+address + ", is_active : "+is_active );//+ ", Dept : " + dept+"//, Basic Pay : "+basic);
 		}
 		stmt.close();
 		connection.closeConnection();
 	}
 
-	public void updateBasePay() throws SQLException {
-
+	public void updateSalary() throws SQLException {
+	
 		Scanner sc = new Scanner(System.in);
 		conn = connection.getConnection();
-		System.out.println("Enter the employee Name");
-		String name = sc.nextLine();
-		System.out.println("Enter the new BasePay");
-		double basepay = sc.nextDouble();
-		String query = "update employee_payroll set basicpay=? where name=?";
-		preparedStatement = conn.prepareStatement(query);
-		preparedStatement.setDouble(1, basepay);
-		preparedStatement.setString(2, name);
-		int i = preparedStatement.executeUpdate();
-		if (i > 0) {
-			System.out.println("Employee updated successsfully");
+		System.out.println("Enter the Emp ID");
+		int empId = sc.nextInt();
+		System.out.println("Enter the new Salary");
+		double empSalary = sc.nextDouble();
+		try {
+		conn.setAutoCommit(false);
+		String query1 = "update employee_payroll set salary=? where id=?";
+		String query2 = "update payroll_detail set basicpay=?,deductions=?,taxablepay=?,incometax=?,netpay=? where id=?";
+		preparedStatement = conn.prepareStatement(query1);
+		preparedStatement.setDouble(1, empSalary);
+		preparedStatement.setInt(2, empId);
+		preparedStatement.executeUpdate();
+		preparedStatement = conn.prepareStatement(query2);
+		preparedStatement.setDouble(1, empSalary);
+		preparedStatement.setDouble(2, (0.2*empSalary));
+		preparedStatement.setDouble(3, (empSalary-(0.2*empSalary)));
+		preparedStatement.setDouble(4, (empSalary-(0.2*empSalary))*0.1);
+		preparedStatement.setDouble(5, empSalary-((empSalary-(0.2*empSalary))*0.1));
+		preparedStatement.setInt(6, empId);
+		preparedStatement.executeUpdate();
+		conn.commit();
+		System.out.println("Salary Updated Successfully");
+		}catch(Exception ex) {
+			conn.rollback();
+		}finally {
+			connection.closeConnection();
 		}
-
-		preparedStatement.close();
-		connection.closeConnection();	
+	
 	}
 
 	public void showByDate() throws SQLException {
@@ -78,7 +92,7 @@ public class EmpPayrollService {
 
 		ResultSet rs = preparedStatement.executeQuery();
 		while (rs.next()) {
-			System.out.println(rs.getString(2));
+			System.out.println("Emp Name : "+rs.getString(2)+", Is Active : "+rs.getBoolean(10));
 		}
 
 		preparedStatement.close();
@@ -203,5 +217,52 @@ public class EmpPayrollService {
 			connection.closeConnection();
 		}
 		
+	}
+	
+	public void deleteEmployee() throws SQLException {
+		Scanner sc6 = new Scanner(System.in);
+		System.out.println("Enter the Emp ID to delete");
+		int empId = sc6.nextInt();
+		
+		conn = connection.getConnection();
+		try {
+		conn.setAutoCommit(false);
+		String query1 = "update employee_payroll set is_active=false where id =?";
+		
+		
+		preparedStatement = conn.prepareStatement(query1);
+		preparedStatement.setInt(1, empId);
+		preparedStatement.executeUpdate();
+		conn.commit();
+		System.out.println("Employee deleted successfully");
+		
+		}catch(Exception ex) {
+		conn.rollback();
+		}finally {
+			connection.closeConnection();
+		}
+	}
+	
+	public void showAllActive() throws SQLException {
+
+		conn = connection.getConnection();
+		String query = "SELECT * FROM employee_payroll where is_active=true";
+		stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+
+		while (rs.next()) {
+			String id = rs.getString(1);
+			String name = rs.getString(2);
+			String gender = rs.getString(3);
+			String salary = rs.getString(4);
+			String startdate = rs.getString(5);
+			String phone = rs.getString(6);
+			String address = rs.getString(7);
+			boolean is_active = rs.getBoolean(10);
+			System.out.println("Emp ID : " + id + ", Name : " + name + ", Gender : " + gender + ", Salary : " + salary
+					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Add : "+address);
+		}
+		stmt.close();
+		connection.closeConnection();
 	}
 }
