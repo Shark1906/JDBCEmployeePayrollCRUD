@@ -29,14 +29,14 @@ public class EmpPayrollService {
 			String startdate = rs.getString(5);
 			String phone = rs.getString(6);
 			String address = rs.getString(7);
-			String dept = rs.getString(8);
-			String basic = rs.getString(9);
-			String deductions = rs.getString(10);
-			String taxablepay = rs.getString(11);
-			String incometax = rs.getString(12);
-			String netpay = rs.getString(13);
+//			String dept = rs.getString(8);
+//			String basic = rs.getString(9);
+//			String deductions = rs.getString(10);
+//			String taxablepay = rs.getString(11);
+//			String incometax = rs.getString(12);
+//			String netpay = rs.getString(13);
 			System.out.println("ID : " + id + ", Name : " + name + ", Gender : " + gender + ", Salary : " + salary
-					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Dept : " + dept);
+					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Add : "+address );//+ ", Dept : " + dept+", Basic Pay : "+basic);
 		}
 		stmt.close();
 		connection.closeConnection();
@@ -150,5 +150,58 @@ public class EmpPayrollService {
 			connection.closeConnection();
 			break;
 		}}while(option!=6);	
+	}
+	
+	public void addEmployeePayroll() throws SQLException {
+		Scanner sc4 = new Scanner(System.in);
+		Scanner sc5 = new Scanner(System.in);
+		System.out.println("Enter Employee Name");
+		String empName = sc4.nextLine();
+		System.out.println("Enter Gender(M/F)");
+		String empSex = sc4.nextLine();
+		System.out.println("Enter Employee Salary");
+		double empSalary = sc4.nextDouble();
+		System.out.println("Enter Start Date");
+		String startDate = sc5.nextLine();
+		System.out.println("Enter Employee Phone");
+		long empPhone = sc4.nextLong();
+		System.out.println("Enter Employee Address");
+		String empAdd = sc5.nextLine();
+		System.out.println("Enter Company ID");
+		int comId = sc4.nextInt();
+		System.out.println("Enter Dept. ID");
+		int deptId = sc4.nextInt();
+		conn = connection.getConnection();
+		try {
+			conn.setAutoCommit(false);
+			String query1 = "insert into employee_payroll(name,gender,salary,startdate,phone,address,company_id,dept_id) values (?,?,?,?,?,?,?,?)";
+			String query2 = "insert into payroll_detail(basicpay,deductions,taxablepay,incometax,netpay) values (?,?,?,?,?)";
+			preparedStatement = conn.prepareStatement(query1);
+			preparedStatement.setString(1, empName);
+			preparedStatement.setString(2, empSex);
+			preparedStatement.setDouble(3, empSalary);
+			preparedStatement.setString(4, startDate);
+			preparedStatement.setLong(5, empPhone);
+			preparedStatement.setString(6, empAdd);
+			preparedStatement.setInt(7, comId);
+			preparedStatement.setInt(8, deptId);
+			
+			preparedStatement.executeUpdate();
+			
+			preparedStatement = conn.prepareStatement(query2);
+			preparedStatement.setDouble(1, empSalary);
+			preparedStatement.setDouble(2, (0.2*empSalary));
+			preparedStatement.setDouble(3, (empSalary-(0.2*empSalary)));
+			preparedStatement.setDouble(4, (empSalary-(0.2*empSalary))*0.1);
+			preparedStatement.setDouble(5, empSalary-((empSalary-(0.2*empSalary))*0.1));
+			preparedStatement.executeUpdate();
+			conn.commit();
+			System.out.println("Data Inserted Successfully");
+		}catch(Exception ex) {
+			conn.rollback();
+		}finally {
+			connection.closeConnection();
+		}
+		
 	}
 }
