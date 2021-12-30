@@ -17,29 +17,29 @@ public class EmpPayrollService {
 	public void showAll() throws SQLException {
 
 		conn = connection.getConnection();
-		String query = "SELECT * FROM employee_payroll";
+		String query = "SELECT eid,name,salary,is_active,company_name,dept_name,deductions,taxablepay,incometax,netpay FROM employee_payroll as ep "
+				+ "inner join company as c on ep.company_id=c.company_id inner join department as d on ep.dept_id=d.dept_id inner join payroll_detail as pd on ep.eid=pd.pid";
 		stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(query);
 
 		while (rs.next()) {
-			String id = rs.getString(1);
+			int eid = rs.getInt(1);
 			String name = rs.getString(2);
-			String gender = rs.getString(3);
-			String salary = rs.getString(4);
-			String startdate = rs.getString(5);
-			String phone = rs.getString(6);
-			String address = rs.getString(7);
-			boolean is_active = rs.getBoolean(10);
-//			String dept = rs.getString(8);
-//			String basic = rs.getString(9);
-//			String deductions = rs.getString(10);
-//			String taxablepay = rs.getString(11);
-//			String incometax = rs.getString(12);
-//			String netpay = rs.getString(13);
-			System.out.println("Emp ID : " + id + ", Name : " + name + ", Gender : " + gender + ", Salary : " + salary
-					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Add : "+address + ", is_active : "+is_active );//+ ", Dept : " + dept+"//, Basic Pay : "+basic);
+			String salary = rs.getString(3);
+			boolean is_active = rs.getBoolean(4);
+			String compName = rs.getString(5);
+			String deptName = rs.getString(6);
+			double deductions = rs.getDouble(7);
+			double taxablepay = rs.getDouble(8);
+			double incometax = rs.getDouble(9);
+			double netpay = rs.getDouble(10);
+			
+			System.out.println("Emp ID : " + eid + ", Name : " + name + ", Salary : " + salary + ", is_active : "+is_active
+					+ ", Comp. Name : " + compName + ", Dept Name : " + deptName + ", Deductions : "+deductions + ", Deductions : "+deductions
+					+ ", TaxablePay : "+taxablepay + ", Incometax : "+incometax + ", NetPay : "+netpay );//+ ", Dept : " + dept+"//, Basic Pay : "+basic);
 		}
 		stmt.close();
+		
 		connection.closeConnection();
 	}
 
@@ -53,8 +53,8 @@ public class EmpPayrollService {
 		double empSalary = sc.nextDouble();
 		try {
 		conn.setAutoCommit(false);
-		String query1 = "update employee_payroll set salary=? where id=?";
-		String query2 = "update payroll_detail set basicpay=?,deductions=?,taxablepay=?,incometax=?,netpay=? where id=?";
+		String query1 = "update employee_payroll set salary=? where eid=?";
+		String query2 = "update payroll_detail set basicpay=?,deductions=?,taxablepay=?,incometax=?,netpay=? where pid=?";
 		preparedStatement = conn.prepareStatement(query1);
 		preparedStatement.setDouble(1, empSalary);
 		preparedStatement.setInt(2, empId);
@@ -227,8 +227,7 @@ public class EmpPayrollService {
 		conn = connection.getConnection();
 		try {
 		conn.setAutoCommit(false);
-		String query1 = "update employee_payroll set is_active=false where id =?";
-		
+		String query1 = "update employee_payroll set is_active=false where eid =?";
 		
 		preparedStatement = conn.prepareStatement(query1);
 		preparedStatement.setInt(1, empId);
@@ -258,7 +257,7 @@ public class EmpPayrollService {
 			String startdate = rs.getString(5);
 			String phone = rs.getString(6);
 			String address = rs.getString(7);
-			boolean is_active = rs.getBoolean(10);
+			//boolean is_active = rs.getBoolean(10);
 			System.out.println("Emp ID : " + id + ", Name : " + name + ", Gender : " + gender + ", Salary : " + salary
 					+ ", StartDate : " + startdate + ", Phone : " + phone + ", Add : "+address);
 		}
